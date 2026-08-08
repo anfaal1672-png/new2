@@ -116,7 +116,10 @@ pack/
 tools/
 ├── build.py                   バリアント適用 + バイオームファイル生成 + .mcpack 化
 ├── biome_map.json             バイオーム → プロファイルの対応表
+├── fetch_vanilla_biomes.py    バニラのクライアントバイオーム定義を取得
 └── gen_icon.py                pack_icon.png の生成
+
+vendor/bedrock-samples/        バニラのクライアントバイオーム定義（(c) Mojang AB / MIT対象外）
 ```
 
 ### バイオームファイルが自動生成される理由
@@ -133,6 +136,15 @@ tools/
 `Loaded client biome but no biome with that name exists` を吐きます。`tools/biome_map.json` には
 製品版に実在するIDだけを載せてください。
 
+**重要**: リソースパック内のクライアントバイオームファイルは、同名のバニラファイルを**置き換えます**。
+バニラの各バイオームは霧・水の色・環境音・BGM・草／葉の色まで持っているので、
+こちらのライティング指定だけを書いた2行のファイルを置くと**それらが全部消えます**。
+そのため `tools/build.py` は `vendor/bedrock-samples/biomes/` にあるバニラの定義を読み込み、
+このパックが担当する2つのコンポーネントだけを差し替えて出力します。霧もBGMもそのまま残ります。
+
+バニラ定義の更新は `python3 tools/fetch_vanilla_biomes.py` で取り直せます。
+これらのファイルの権利は Mojang AB にあり、MITの対象外です（[NOTICE](vendor/bedrock-samples/NOTICE.md)）。
+
 **ネザーとエンドのバイオームはあえて上書きしていません。** バニラの雰囲気をそのまま残すためです。
 上書きしたい場合は `tools/biome_map.json` に `hell` / `crimson_forest` / `warped_forest` /
 `soulsand_valley` / `basalt_deltas` / `the_end` を追加してください。
@@ -147,8 +159,8 @@ tools/
 | --- | --- | --- |
 | **影をもっと濃くしたい** | `lighting/*.json` の `sky.intensity` | 下げる（0.1〜1.0）。空からの間接光が減り影が暗くなる |
 | **影の中が真っ黒すぎる** | `lighting/*.json` の `ambient.illuminance` | 上げる（0.0〜5.0、実用域は0.01〜0.05） |
-| **影の向きを変えたい** | `lighting/*.json` の `orbital_offset_degrees` | 太陽の軌道を傾ける。**全ファイルで同じ値**にすること |
-| **昼をもっと眩しく** | `lighting/*.json` の `sun.illuminance` のキーフレーム | `"0.0"` と `"1.0"` が正午、`"0.5"` が真夜中 |
+| **影の向きを変えたい** | `lighting/*.json` の `orbital_offset_degrees` | 太陽の軌道を傾ける。**全ファイルで同じ値**にすること。既定は バニラと同じ `0.0`（空に描かれる太陽の位置と影の向きをずらさないため） |
+| **昼をもっと眩しく** | `lighting/*.json` の `sun.illuminance` のキーフレーム | `"0.0"` と `"1.0"` が正午、`"0.5"` が真夜中。**バニラと同じ 0〜100 のスケール**を使うこと（下記参照） |
 | **影をドット感のあるカクカクに** | `shadows/global.json` の `shadow_style` | `"blocky_shadows"` ＋ `"texel_size": 16` |
 | **画面の色味** | `color_grading/*.json` の `temperature` | 大きく＝暖色、小さく＝寒色（`color_temperature` 時） |
 | **全体のコントラスト** | `color_grading/*.json` の `midtones.contrast` | 1.0が無変化 |
@@ -168,6 +180,15 @@ Vibrant Visuals にはバイオーム間で**補間できないパラメータ**
   古いバージョンを宣言すると、太陽・月が「必須フィールドが無い」と報告され、色も 1.21.60 以前の
   RGBA ルールで解釈されてエラーになります
 - 色は 16進文字列ではなく `[r, g, b]` の配列で書くこと（6桁hexはスキーマによって受け付けられません）
+- 太陽・月の `illuminance` と `color` は**必ずキーフレーム**（`{"0.0": ..., "1.0": ...}` の形）で書くこと。
+  定数を書くと `Expected keyframes.` になります
+
+### 明るさの単位について
+
+公式ドキュメントは「実世界のlux（正午の太陽 = 約10万lx）」と説明していますが、
+**製品版のバニラのファイルは正午の太陽 = `100.0`、環境光 = `0.02` というスケールを使っています**。
+ドキュメント通りの10万を入れると環境光との比が1000倍ずれ、影の中と洞窟が完全に潰れます。
+このパックはバニラと同じスケール（正午 84〜108、月 0.28〜0.5、環境光 0.010〜0.022）に合わせています。
 
 ---
 
@@ -198,7 +219,10 @@ python3 tools/gen_icon.py              # アイコンを作り直す
 
 ## ライセンス
 
-MIT License（[LICENSE](LICENSE)）。改変・再配布自由です。
+このパック自身の設定・ツール・ドキュメントは MIT License（[LICENSE](LICENSE)）。改変・再配布自由です。
+
+ただし `vendor/bedrock-samples/` 以下のバニラ定義は **(c) Mojang AB / Minecraft EULA 準拠**で、
+MITの対象外です（[NOTICE](vendor/bedrock-samples/NOTICE.md)）。
 
 ## 参考資料（公式ドキュメント）
 

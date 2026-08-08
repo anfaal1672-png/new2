@@ -25,12 +25,11 @@ ROOT = Path(__file__).resolve().parent.parent
 PACK = ROOT / "pack"
 DIST = ROOT / "dist"
 BIOME_MAP = ROOT / "tools" / "biome_map.json"
+VANILLA_BIOMES = ROOT / "vendor" / "bedrock-samples" / "biomes"
 
 # Stable namespace so a rebuild keeps the same pack UUIDs and Minecraft treats
 # the result as an update of the installed pack rather than a second copy.
 NAMESPACE = uuid.UUID("b2a01a91-1938-4270-80ef-f4f8f30f9ab8")
-
-CLIENT_BIOME_FORMAT = "1.21.70"
 
 
 # --------------------------------------------------------------------------
@@ -124,20 +123,31 @@ def load_pack() -> tuple[dict[str, Any], dict[str, bytes]]:
 
 
 def client_biome(biome: str, profile: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "format_version": CLIENT_BIOME_FORMAT,
-        "minecraft:client_biome": {
-            "description": {"identifier": biome},
-            "components": {
-                "minecraft:lighting_identifier": {
-                    "lighting_identifier": profile["lighting_identifier"]
-                },
-                "minecraft:color_grading_identifier": {
-                    "color_grading_identifier": profile["color_grading_identifier"]
-                },
-            },
-        },
+    """Vanilla's definition for `biome` with this pack's identifiers swapped in.
+
+    A client biome file in a resource pack stands in for the vanilla file of the
+    same name, and vanilla's definition carries fog, water colour, ambient
+    sounds, music and foliage tints besides the lighting identifiers. Writing a
+    two-component file of our own would drop all of that, so we start from the
+    vanilla definition and only replace what this pack actually owns.
+    """
+    source = VANILLA_BIOMES / f"{biome}.client_biome.json"
+    if not source.exists():
+        raise SystemExit(
+            f"missing vanilla definition for '{biome}': "
+            f"run python3 tools/fetch_vanilla_biomes.py"
+        )
+    with source.open(encoding="utf-8") as fh:
+        doc = json.load(fh)
+
+    components = doc["minecraft:client_biome"]["components"]
+    components["minecraft:lighting_identifier"] = {
+        "lighting_identifier": profile["lighting_identifier"]
     }
+    components["minecraft:color_grading_identifier"] = {
+        "color_grading_identifier": profile["color_grading_identifier"]
+    }
+    return doc
 
 
 def add_biomes(docs: dict[str, Any]) -> int:
@@ -199,6 +209,18 @@ def check_lighting_schema(docs: dict[str, Any]) -> None:
                     f"{name}: write {label} as a component array instead of the "
                     f"hex string {value!r}"
                 )
+
+        # The sun and moon are keyframed in the vanilla pack, and a constant
+        # there is reported as "Expected keyframes." Keep every orbital value a
+        # keyframe map, even when it holds a single value at both ends.
+        orbital = lights["orbital"]
+        for body in ("sun", "moon"):
+            for field in ("illuminance", "color"):
+                if not isinstance(orbital[body][field], dict):
+                    raise SystemExit(
+                        f"{name}: {body}.{field} must be a keyframe map, "
+                        f"not a constant"
+                    )
 
 
 def walk_colors(node: Any, path: str = "") -> list[tuple[str, Any]]:
