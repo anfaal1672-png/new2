@@ -88,8 +88,7 @@ dist/kage_shadows_cinematic.mcpack   ← 見た目最優先
   **約45KB**、バニラのテクスチャ解像度をそのまま使います
 - **ポイントライトを追加していません。** 松明などを点光源にすると影が増えて一気に重くなるため、
   バニラの挙動のまま（`local_lighting` は同梱していません）
-- **PBRのフォールバック値**（`pbr/global.json`）で全ブロック・全モブに一括でざらついた質感を与えているので、
-  テクスチャを増やさずに立体感だけが増えます
+- **バニラが実際に同梱しているファイル形式だけを使っています**（下記「PBRフォールバックについて」参照）
 
 つまり追加コストは実質「Vibrant Visuals 自体の描画負荷」だけです。
 
@@ -109,8 +108,7 @@ pack/
 │   └── dark.json              沼・暗い森・洞窟・ディープダーク
 ├── color_grading/
 │   ├── color_grading.json     標準（コントラスト／彩度／色温度／トーンマッピング）
-│   ├── warm.json / cold.json / dark.json
-├── pbr/global.json            テクスチャセット未指定時のPBRフォールバック
+│   └── warm.json / cold.json / dark.json
 └── texts/                     パック名・説明（英語／日本語）
 
 tools/
@@ -191,6 +189,34 @@ Vibrant Visuals にはバイオーム間で**補間できないパラメータ**
 このパックはバニラと同じスケール（正午 84〜108、月 0.28〜0.5、環境光 0.010〜0.022）に合わせています。
 
 ---
+
+## PBRフォールバックについて（同梱していません）
+
+公式ドキュメントには `pbr/global.json`（テクスチャセット未指定時の
+metalness / emissive / roughness / subsurface の既定値）が載っていますが、**このパックでは同梱していません**。
+
+理由は、製品版のバニラリソースパックにこのファイルが**一切存在しない**ためです。
+バニラが同梱しているVV関連ファイルは `lighting/` だけで、`pbr/` も `shadows/` も `local_lighting/` も
+ありません。つまり `pbr/global.json` は実物で答え合わせができない唯一のファイルで、実際に同梱していた版では
+`[Lighting][error] missing required field` と `Expected [r, g, b, a] ...` が出ていました
+（ドキュメントに載っているサンプル自体、括弧が閉じていない壊れたJSONです）。
+
+必要なら手動で `pack/pbr/global.json` を作れば同梱されます。その際、値は**浮動小数ではなく整数**で
+試してください（エラーメッセージが「0-255の範囲の値」を求めているため）。
+
+```json
+{
+  "format_version": "1.21.40",
+  "minecraft:pbr_fallback_settings": {
+    "blocks":    { "global_metalness_emissive_roughness_subsurface": [0, 0, 235, 0] },
+    "actors":    { "global_metalness_emissive_roughness_subsurface": [0, 0, 215, 20] },
+    "particles": { "global_metalness_emissive_roughness_subsurface": [0, 0, 255, 0] },
+    "items":     { "global_metalness_emissive_roughness_subsurface": [0, 0, 225, 0] }
+  }
+}
+```
+
+無くても影・ライティング・カラーグレーディングは完全に機能します。
 
 ## 既知の制限
 
