@@ -6,6 +6,7 @@
     "per biome that points at our own lighting / color grading identifiers.",
     "Nether and End biomes are intentionally left untouched so they keep their vanilla look.",
     "Profile keys map to lighting/<profile>.json + color_grading/<profile>.json.",
+    "Water is a single shared configuration: Vibrant Visuals cannot blend the waves on/off flag or caustics between biomes, so every biome points at the same one.",
     "The 'default' profile lives in lighting/global.json + color_grading/color_grading.json.",
     "Only biome IDs that exist in the shipping game are listed: an unknown ID makes the client log 'Loaded client biome but no biome with that name exists'."
   ],
@@ -13,6 +14,8 @@
     "default": {
       "lighting_identifier": "kage:default_lighting",
       "color_grading_identifier": "kage:default_color_grading",
+      "atmosphere_identifier": "kage:default_atmospherics",
+      "water_identifier": "kage:default_water",
       "biomes": [
         "ocean",
         "legacy_frozen_ocean",
@@ -64,6 +67,8 @@
     "warm": {
       "lighting_identifier": "kage:warm_lighting",
       "color_grading_identifier": "kage:warm_color_grading",
+      "atmosphere_identifier": "kage:warm_atmospherics",
+      "water_identifier": "kage:default_water",
       "biomes": [
         "desert",
         "desert_hills",
@@ -83,6 +88,8 @@
     "cold": {
       "lighting_identifier": "kage:cold_lighting",
       "color_grading_identifier": "kage:cold_color_grading",
+      "atmosphere_identifier": "kage:cold_atmospherics",
+      "water_identifier": "kage:default_water",
       "biomes": [
         "frozen_ocean",
         "deep_frozen_ocean",
@@ -103,6 +110,8 @@
     "dark": {
       "lighting_identifier": "kage:dark_lighting",
       "color_grading_identifier": "kage:dark_color_grading",
+      "atmosphere_identifier": "kage:dark_atmospherics",
+      "water_identifier": "kage:default_water",
       "biomes": [
         "swampland",
         "swampland_mutated",

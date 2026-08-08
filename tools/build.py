@@ -56,6 +56,10 @@ def patch_lite(pack: dict[str, Any]) -> None:
             # Slightly brighter indirect light so shadow interiors stay readable
             # without any highlight/shadow grading to lift them.
             sky["intensity"] = round(min(1.0, sky["intensity"] * 1.15), 3)
+        if name.startswith("water/"):
+            # The wave fractal is the most expensive thing in the water shader.
+            # Caustics stay on: they are what makes shallow water read as water.
+            doc["minecraft:water_settings"]["waves"]["enabled"] = False
 
 
 def patch_cinematic(pack: dict[str, Any]) -> None:
@@ -78,6 +82,12 @@ def patch_cinematic(pack: dict[str, Any]) -> None:
                 grading["shadows"]["shadowsMax"] = min(
                     1.0, round(grading["shadows"]["shadowsMax"] + 0.1, 3)
                 )
+        if name.startswith("water/"):
+            settings = doc["minecraft:water_settings"]
+            waves = settings["waves"]
+            waves["octaves"] = 24
+            waves["depth"] = 1.0
+            settings["caustics"]["power"] = 3
 
 
 VARIANTS: dict[str, dict[str, Any]] = {
@@ -141,12 +151,10 @@ def client_biome(biome: str, profile: dict[str, Any]) -> dict[str, Any]:
         doc = json.load(fh)
 
     components = doc["minecraft:client_biome"]["components"]
-    components["minecraft:lighting_identifier"] = {
-        "lighting_identifier": profile["lighting_identifier"]
-    }
-    components["minecraft:color_grading_identifier"] = {
-        "color_grading_identifier": profile["color_grading_identifier"]
-    }
+    for key in ("lighting", "color_grading", "atmosphere", "water"):
+        components[f"minecraft:{key}_identifier"] = {
+            f"{key}_identifier": profile[f"{key}_identifier"]
+        }
     return doc
 
 
@@ -258,6 +266,19 @@ def check_invariants(docs: dict[str, Any]) -> None:
     }
     if len(offsets) > 1:
         raise SystemExit(f"orbital_offset_degrees must match across the pack: {offsets}")
+
+    water = [doc["minecraft:water_settings"] for name, doc in docs.items()
+             if name.startswith("water/")]
+    for field, value in (("waves", "enabled"), ("caustics", None)):
+        seen = {
+            json.dumps(w[field][value] if value else w[field], sort_keys=True)
+            for w in water
+        }
+        if len(seen) > 1:
+            raise SystemExit(
+                f"water {field}{'.' + value if value else ''} cannot be blended "
+                f"between biomes and must match across the pack: {seen}"
+            )
 
 
 def build(variant: str) -> Path:
