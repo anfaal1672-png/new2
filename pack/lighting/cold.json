@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.70",
+  "format_version": "1.21.80",
   "minecraft:lighting_settings": {
     "description": {
       "identifier": "kage:cold_lighting"
@@ -34,7 +34,7 @@
         },
         "moon": {
           "illuminance": 0.4,
-          "color": "#bfd6ff"
+          "color": [191, 214, 255]
         },
         "orbital_offset_degrees": 8.0
       },
@@ -48,7 +48,7 @@
     },
     "ambient": {
       "illuminance": 0.022,
-      "color": "#a6bede"
+      "color": [166, 190, 222]
     },
     "sky": {
       "intensity": 0.86

@@ -173,6 +173,50 @@ def apply_identity(docs: dict[str, Any], assets: dict[str, bytes], variant: str)
         assets[rel] = ("\n".join(lines) + "\n").encode("utf-8")
 
 
+def check_lighting_schema(docs: dict[str, Any]) -> None:
+    """Lighting settings must declare a schema version that matches their shape.
+
+    The sun/moon moved under a "directional_lights.orbital" wrapper in schema
+    1.21.80, the same version that added "flash". Declaring an older version
+    while using the newer shape makes the client report the sun and moon as
+    missing required fields, and colours get parsed under the pre-1.21.60 RGBA
+    rules. Colours are written as explicit component arrays for the same
+    reason: a 6-digit hex string is only valid under the RGB-era schemas.
+    """
+    for name, doc in docs.items():
+        if not name.startswith("lighting/"):
+            continue
+        version = tuple(int(part) for part in doc["format_version"].split("."))
+        lights = doc["minecraft:lighting_settings"]["directional_lights"]
+        if ("orbital" in lights or "flash" in lights) and version < (1, 21, 80):
+            raise SystemExit(
+                f"{name}: 'orbital'/'flash' need format_version 1.21.80 or newer, "
+                f"got {doc['format_version']}"
+            )
+        for label, value in walk_colors(doc):
+            if isinstance(value, str):
+                raise SystemExit(
+                    f"{name}: write {label} as a component array instead of the "
+                    f"hex string {value!r}"
+                )
+
+
+def walk_colors(node: Any, path: str = "") -> list[tuple[str, Any]]:
+    """Collect every value stored under a "color" key, keyframes included."""
+    found: list[tuple[str, Any]] = []
+    if isinstance(node, dict):
+        for key, value in node.items():
+            here = f"{path}.{key}" if path else key
+            if key == "color":
+                if isinstance(value, dict):  # keyframed colour
+                    found += [(f"{here}[{k}]", v) for k, v in value.items()]
+                else:
+                    found.append((here, value))
+            else:
+                found += walk_colors(value, here)
+    return found
+
+
 def check_invariants(docs: dict[str, Any]) -> None:
     """Guard the two things Vibrant Visuals refuses to blend between biomes."""
     operators = {
@@ -201,6 +245,7 @@ def build(variant: str) -> Path:
         patch(docs)
     biome_count = add_biomes(docs)
     apply_identity(docs, assets, variant)
+    check_lighting_schema(docs)
     check_invariants(docs)
 
     out_dir = DIST / f"kage_shadows_{variant}"

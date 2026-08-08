@@ -127,7 +127,11 @@ tools/
 
 そこで `tools/build.py` が `tools/biome_map.json` を読み、オーバーワールドの全バイオーム分の
 `biomes/<biome>.client_biome.json` を生成して、このパックのライティング／グレーディング識別子を
-明示的に割り当てます（83バイオーム）。
+明示的に割り当てます（81バイオーム）。
+
+存在しないバイオームIDを書くと、クライアントが
+`Loaded client biome but no biome with that name exists` を吐きます。`tools/biome_map.json` には
+製品版に実在するIDだけを載せてください。
 
 **ネザーとエンドのバイオームはあえて上書きしていません。** バニラの雰囲気をそのまま残すためです。
 上書きしたい場合は `tools/biome_map.json` に `hell` / `crimson_forest` / `warped_forest` /
@@ -157,6 +161,13 @@ Vibrant Visuals にはバイオーム間で**補間できないパラメータ**
 
 - 全 `color_grading/*.json` の `tone_mapping.operator` が同一であること
 - 全 `lighting/*.json` の `orbital_offset_degrees` が同一であること
+
+さらにライティングのスキーマ整合性もチェックします。
+
+- `directional_lights.orbital` / `flash` を使うなら `format_version` は **1.21.80 以降**であること。
+  古いバージョンを宣言すると、太陽・月が「必須フィールドが無い」と報告され、色も 1.21.60 以前の
+  RGBA ルールで解釈されてエラーになります
+- 色は 16進文字列ではなく `[r, g, b]` の配列で書くこと（6桁hexはスキーマによって受け付けられません）
 
 ---
 

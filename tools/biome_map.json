@@ -6,7 +6,8 @@
     "per biome that points at our own lighting / color grading identifiers.",
     "Nether and End biomes are intentionally left untouched so they keep their vanilla look.",
     "Profile keys map to lighting/<profile>.json + color_grading/<profile>.json.",
-    "The 'default' profile lives in lighting/global.json + color_grading/color_grading.json."
+    "The 'default' profile lives in lighting/global.json + color_grading/color_grading.json.",
+    "Only biome IDs that exist in the shipping game are listed: an unknown ID makes the client log 'Loaded client biome but no biome with that name exists'."
   ],
   "profiles": {
     "default": {
@@ -34,7 +35,6 @@
         "birch_forest_hills",
         "birch_forest_mutated",
         "birch_forest_hills_mutated",
-        "dappled_forest",
         "jungle",
         "jungle_hills",
         "jungle_mutated",
@@ -112,7 +112,6 @@
         "pale_garden",
         "lush_caves",
         "dripstone_caves",
-        "sulfur_caves",
         "deep_dark"
       ]
     }
