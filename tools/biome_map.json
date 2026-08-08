@@ -1,0 +1,120 @@
+{
+  "_comment": [
+    "Vanilla (1.21.90+) ships its own per-biome Vibrant Visuals settings, and those",
+    "take precedence over any global lighting/color_grading JSON a custom pack provides.",
+    "To make this pack actually apply in vanilla worlds we emit one client biome file",
+    "per biome that points at our own lighting / color grading identifiers.",
+    "Nether and End biomes are intentionally left untouched so they keep their vanilla look.",
+    "Profile keys map to lighting/<profile>.json + color_grading/<profile>.json.",
+    "The 'default' profile lives in lighting/global.json + color_grading/color_grading.json."
+  ],
+  "profiles": {
+    "default": {
+      "lighting_identifier": "kage:default_lighting",
+      "color_grading_identifier": "kage:default_color_grading",
+      "biomes": [
+        "ocean",
+        "legacy_frozen_ocean",
+        "deep_ocean",
+        "cold_ocean",
+        "deep_cold_ocean",
+        "lukewarm_ocean",
+        "deep_lukewarm_ocean",
+        "warm_ocean",
+        "deep_warm_ocean",
+        "river",
+        "beach",
+        "stone_beach",
+        "plains",
+        "sunflower_plains",
+        "forest",
+        "forest_hills",
+        "flower_forest",
+        "birch_forest",
+        "birch_forest_hills",
+        "birch_forest_mutated",
+        "birch_forest_hills_mutated",
+        "dappled_forest",
+        "jungle",
+        "jungle_hills",
+        "jungle_mutated",
+        "jungle_edge",
+        "jungle_edge_mutated",
+        "bamboo_jungle",
+        "bamboo_jungle_hills",
+        "taiga",
+        "taiga_hills",
+        "taiga_mutated",
+        "mega_taiga",
+        "mega_taiga_hills",
+        "redwood_taiga_mutated",
+        "redwood_taiga_hills_mutated",
+        "mushroom_island",
+        "mushroom_island_shore",
+        "extreme_hills",
+        "extreme_hills_edge",
+        "extreme_hills_mutated",
+        "extreme_hills_plus_trees",
+        "extreme_hills_plus_trees_mutated",
+        "meadow",
+        "cherry_grove",
+        "stony_peaks"
+      ]
+    },
+    "warm": {
+      "lighting_identifier": "kage:warm_lighting",
+      "color_grading_identifier": "kage:warm_color_grading",
+      "biomes": [
+        "desert",
+        "desert_hills",
+        "desert_mutated",
+        "savanna",
+        "savanna_plateau",
+        "savanna_mutated",
+        "savanna_plateau_mutated",
+        "mesa",
+        "mesa_bryce",
+        "mesa_plateau",
+        "mesa_plateau_mutated",
+        "mesa_plateau_stone",
+        "mesa_plateau_stone_mutated"
+      ]
+    },
+    "cold": {
+      "lighting_identifier": "kage:cold_lighting",
+      "color_grading_identifier": "kage:cold_color_grading",
+      "biomes": [
+        "frozen_ocean",
+        "deep_frozen_ocean",
+        "frozen_river",
+        "cold_beach",
+        "ice_plains",
+        "ice_mountains",
+        "ice_plains_spikes",
+        "cold_taiga",
+        "cold_taiga_hills",
+        "cold_taiga_mutated",
+        "grove",
+        "snowy_slopes",
+        "jagged_peaks",
+        "frozen_peaks"
+      ]
+    },
+    "dark": {
+      "lighting_identifier": "kage:dark_lighting",
+      "color_grading_identifier": "kage:dark_color_grading",
+      "biomes": [
+        "swampland",
+        "swampland_mutated",
+        "mangrove_swamp",
+        "roofed_forest",
+        "roofed_forest_mutated",
+        "pale_garden",
+        "lush_caves",
+        "dripstone_caves",
+        "sulfur_caves",
+        "deep_dark"
+      ]
+    }
+  }
+}

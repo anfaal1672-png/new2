@@ -1,0 +1,25 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "pack.name",
+    "description": "pack.description",
+    "uuid": "b2a01a91-1938-4270-80ef-f4f8f30f9ab8",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 120]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "d1d33391-d4ac-4ce9-9832-8c5d4fe1eb88",
+      "version": [1, 0, 0]
+    }
+  ],
+  "capabilities": ["pbr"],
+  "metadata": {
+    "authors": ["Kage Shadows"],
+    "license": "MIT",
+    "generated_with": {
+      "kage_build": ["1.0.0"]
+    }
+  }
+}

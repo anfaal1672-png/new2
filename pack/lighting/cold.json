@@ -1,0 +1,57 @@
+{
+  "format_version": "1.21.70",
+  "minecraft:lighting_settings": {
+    "description": {
+      "identifier": "kage:cold_lighting"
+    },
+    "directional_lights": {
+      "orbital": {
+        "sun": {
+          "illuminance": {
+            "0.0": 118000.0,
+            "0.2": 44000.0,
+            "0.28": 8500.0,
+            "0.34": 560.0,
+            "0.42": 6.0,
+            "0.5": 1.0,
+            "0.58": 6.0,
+            "0.66": 560.0,
+            "0.72": 8500.0,
+            "0.8": 44000.0,
+            "1.0": 118000.0
+          },
+          "color": {
+            "0.0": [248, 251, 255],
+            "0.22": [255, 240, 224],
+            "0.3": [255, 202, 164],
+            "0.36": [255, 172, 138],
+            "0.5": [255, 255, 255],
+            "0.64": [255, 172, 138],
+            "0.7": [255, 202, 164],
+            "0.78": [255, 240, 224],
+            "1.0": [248, 251, 255]
+          }
+        },
+        "moon": {
+          "illuminance": 0.4,
+          "color": "#bfd6ff"
+        },
+        "orbital_offset_degrees": 8.0
+      },
+      "flash": {
+        "illuminance": 5.0,
+        "color": [255, 255, 255]
+      }
+    },
+    "emissive": {
+      "desaturation": 0.08
+    },
+    "ambient": {
+      "illuminance": 0.022,
+      "color": "#a6bede"
+    },
+    "sky": {
+      "intensity": 0.86
+    }
+  }
+}
